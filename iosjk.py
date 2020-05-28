@@ -243,9 +243,8 @@ def move_file(file, folder_tgt, suffix=0):
 
 
 
-
 import pymysql
-conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='Chihiro123',db='web')
+conn = pymysql.connect(host='121.37.252.51', port=3306, user='root', passwd='Chi123456###',db='web')
 
 class linkdb(object):
     """conn数据库
