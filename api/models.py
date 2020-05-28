@@ -1,4 +1,4 @@
-# from django.db import models
+from django.db import models
 #
 # class UserInfo(models.Model):
 #     username = models.CharField(max_length=32, unique=True) #unique 唯一索引
