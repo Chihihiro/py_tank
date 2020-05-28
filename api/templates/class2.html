@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-datepicker3.css">
+    <script src="/static/jquery-3.4.1.min.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+    <script src="/static/js/popper.js"></script>
+    <script src="/static/echarts.min.js"></script>
+    <script src="/static/js/bootstrap-datepicker.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <script src="/static/css/bootstrap-datepicker3.min.css"></script>
+    <script src="/static/js/bootstrap-datepicker.js"></script>
+    <script src="/static/js/moment.js"></script>
+    <script src="/static/js/bootstrap-datepicker.zh-CN.js"></script>
+
+
+
+    <link href="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <style>
+
+        .container-fluid > .row > .rightSide {
+            height: 960px;
+            background-color: #EEEEEE;
+        }
+
+        .container-fluid > .row > .leftCont {
+            height: 960px;
+            background-color: #000B43;
+        }
+
+
+
+        #part1 {
+            background-color: #FFFFFF;
+            height: 360px;
+            border-color: #EEEEEE;
+            border-style: groove
+        }
+
+        #part2 {
+            background-color: #FFFFFF;
+            height: 750px;
+            border-color: #EEEEEE;
+            border-style: groove;
+            border-radius: 5px
+        }
+
+
+    </style>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+
+<body>
+
+<div class="container-fluid" style="overflow:hidden;">
+    <div class="row">
+        {#        <div id="user_table" class="col text-white bg-primary" >用户1111</div>#}
+        <div class="leftCont col-1 " style="height: 960px">
+            <br>
+            <br>
+            <div>
+                <nav class="navbar bg-primary">
+                    <a class="navbar-brand text-white " href="/api/class2/page1/isday" style="font-size:17px">用户流量列表</a>
+                </nav>
+                <br>
+{#                <nav class="navbar bg-primary">#}
+{#                    <a class="navbar-brand text-white " href="/api/class/page1/istoday" style="font-size:17px">用户流量详情</a>#}
+{#                </nav>#}
+            </div>
+        </div>
+
+        <div class="rightSide col-11 container-fluid">
+            <div class="col">
+                <br>
+                <h5>用户流量详情</h5>
+                <div class="row">
+                <div class="form-inline">
+                    <input id='isday' type="submit" class="btn btn-light" style="margin-right:10px;"
+                           aria-pressed="true" value="全部" onclick="javascrtpt:window.location.href='/api/class/page1/isday'"/>
+                    <input id='isyesterday' type="submit" class="btn btn-light" style="margin-right:10px;"
+                           value="昨天" onclick="javascrtpt:window.location.href='/api/class/page1/isyesterday'"/>
+                    <input id='istoday' type="submit" class="btn btn-light" style="margin-right:10px;"
+                           value="今天" onclick="javascrtpt:window.location.href='/api/class/page1/istoday'"/>
+                    <input id='isweek' type="submit" class="btn btn-light" style="margin-right:10px;"
+                           value="本周" onclick="javascrtpt:window.location.href='/api/class/page1/isweek'"/>
+                    <input id='isyear' type="submit" class="btn btn-light" style="margin-right:10px;"
+                           value="今年" onclick="javascrtpt:window.location.href='/api/class/page1/isyear'"/>
+                    <div><input id="start" type="text" class="datepicker" placeholder="请选择日期" /></div>
+                    <div><input id="end" type="text" class="datepicker" placeholder="请选择日期" /></div>
+                    <input id='zdy' type="submit" class="btn btn-light " style="margin-left:15px;"
+                           value="自定义时间" onclick="jump()"/>
+
+
+
+
+                    </div>
+{#                    </div>#}
+                </div>
+            </div>
+            <br>
+            <div class="col" id="part2">
+                <table class="table table-hover" id="table1">
+                    <thead>
+                    <tr>
+                        <th>用户</th>
+                        <th>总流量</th>
+                        <th>下行流量</th>
+                        <th>上行流量</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in class_list %}
+                        <tr>
+                            <td class="days" style="width:30%">tank</td>
+{#                            <td style="width:8%">{{ i.0 }}</td>#}
+                            <td class="sum1" style="width:8%"><a
+                                    style="color: #99CDF4; background: #D3EAFA; padding: 1mm; font-size:12px; font-weight: 700">{{ i.0 }}</a>
+                            </td>
+                            <td class="downlink" style="width:8%"><a
+                                    style="color: #F785B5; background: #FCD8E7; padding: 1mm; font-size:12px; font-weight: 700">{{ i.1 }}</a>
+                            </td>
+                            <td class="uplink" style="width:8%"><a style="color: #F8A677; background: #FCE3D0; padding: 1mm; font-size:12px; font-weight: 700">{{ i.2 }}</a></td>
+                            <td class="uplink" style="width:46%">
+                                <button type="button" style="width:8%; height: 30px" class="btn btn-primary btn-sm" data-toggle="button" aria-pressed="false" autocomplete="off" onclick="javascrtpt:window.location.href='/api/class/page1/isday'">查看</button></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <br>
+            <div class="col">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center" id="pag">
+{#                            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">Previous</a></li>#}
+{#                            <li class="page-item active" onclick="click_active()"><a class="page-link" href="#">1</a></li>#}
+{#                            <li class="page-item" onclick="click_active()"><a class="page-link" href="#">2</a></li>#}
+{#                            <li class="page-item" onclick="click_active()"><a class="page-link" href="#">3</a></li>#}
+{#                            <li class="page-item" onclick="click_active()"><a class="page-link" href="#">4</a></li>#}
+{#                            <li class="page-item" onclick="click_active()"><a class="page-link" href="#">5</a></li>#}
+{#                            <li class="page-item"><a class="page-link" href="#">Next</a></li>#}
+                        </ul>
+                    </nav>
+
+            </div>
+
+        </div>
+
+
+
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    var days = $('.days');
+    var dd = [];
+    for (i = 0; i < days.length; i++) {
+        dd.push(days[i].innerText)
+    }
+
+    var sum1 = $('.sum1');
+    var ss = [];
+    for (i = 0; i < sum1.length; i++) {
+        ss.push(parseInt(sum1[i].innerText))
+    }
+
+    var downlink = $('.downlink');
+    var dow = [];
+    for (i = 0; i < downlink.length; i++) {
+        dow.push(parseInt(downlink[i].innerText))
+    }
+
+    var uplink = $('.uplink');
+    var up = [];
+    for (i = 0; i < uplink.length; i++) {
+        up.push(parseInt(uplink[i].innerText))
+    }
+    var option = {
+        title: {
+            text: '流量图'
+        },
+        xAxis: {
+            type: 'category',
+            data: dd
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            data: ss,
+            type: 'line',
+            color: "#99CDF4"
+        }, {
+            data: dow,
+            type: 'line',
+            color: "#F785B5"
+        }, {
+            data: up,
+            type: 'line',
+            color: "#F8A677"
+        }]
+    };
+
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
+
+
+
+
+{#<script>#}
+{#    function getUrlParam(name) {#}
+{#            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象#}
+{#            var r = window.location.search.substr(1).match(reg);  //匹配目标参数#}
+{#            if (r != null) return unescape(r[2]); return null; //返回参数值#}
+{#        }#}
+{#    var url1 = window.location.href;#}
+{#    var url2 = url1.match(/page\d+/)[0];#}
+{#    var page = parseInt(url2.match(/\d+/)[0]);#}
+    {#console.log(page);#}
+{#    var z = url1.match(/is\w+/)[0]#}
+{#    obj = $("#pag")#}
+{#    if (page<=1){obj.append('<li class="page-item disabled"><a class="page-link" href="/api/class/page'+(page-1)+'/'+z+'">Previous</a></li>');}#}
+{#    else{#}
+{#        obj.append('<li class="page-item"><a class="page-link" href="/api/class/page'+(page-1)+'/'+z+'">Previous</a></li>')#}
+{#    }#}
+{##}
+{#    if (page<=2){#}
+{#        for (i = page; i < page+5; i++) {#}
+{#        if (i===page) {#}
+{#            obj.append('<li class="page-item active" onclick="click_active()"><a class="page-link" href="/api/class/page' + i +'/'+z+ '">' + i + '</a></li>')#}
+{#        }else {#}
+{#            obj.append('<li class="page-item" onclick="click_active()"><a class="page-link" href="/api/class/page' + i +'/'+z+ '">' + i + '</a></li>')#}
+{#        }}#}
+{##}
+{#    }#}
+{#    else {#}
+{##}
+{#    for (i = page-2; i < page+3; i++) {#}
+{#        console.log(i)#}
+{#        if (i===page) {#}
+{#            obj.append('<li class="page-item active" onclick="click_active()"><a class="page-link" href="/api/class/page' + i +'/'+z+ '">' + i + '</a></li>')#}
+{#        }else {#}
+{#            obj.append('<li class="page-item" onclick="click_active()"><a class="page-link" href="/api/class/page' + i +'/'+z+ '">' + i + '</a></li>')#}
+{#        }}}#}
+{##}
+{##}
+{#    obj.append('<li class="page-item"><a class="page-link" href="/api/class/page'+(page+1)+'/'+z+'">Next</a></li>');#}
+{##}
+{#</script>#}
+
+
+<script>
+        $(".page-item").click(function(){
+                  $(".page-item").removeClass("active");
+                  $(this).addClass("active");
+        })
+</script>
+
+<script>
+        $(".btn").click(function(){
+                  $(".btn").removeClass("active");
+                  $(this).addClass("active");
+        })
+</script>
+<script>
+    var url1 = window.location.href;
+    var z = url1.match(/is\w+/)[0];
+    $("#"+z).addClass("active");
+</script>
+<script type="text/javascript">
+    $(function () {
+        $(".datepicker").datepicker({
+            language: "zh-CN",
+            autoclose: true,//选中之后自动隐藏日期选择框
+            clearBtn: true,//清除按钮
+            todayBtn: false,//今日按钮
+            format: "yyyy-mm-dd"//日期格式，详见 http://bootstrap-datepicker.readthedocs.org/en/release/options.html#format
+        });
+    });
+</script>
+<script>
+    {#$(".datepicker").datepicker("getDate").toLocaleString();//获取#}
+    {#$(".datepicker").datepicker("setDate", '2014-01-25');//设置#}
+</script>
+<script>
+    function jump(){
+        var s = $("#start").val();
+        var e = $("#end").val();
+        window.location.href="/api/class/page1/iszdy"+s+e;}
+</script>
+</body>
+
+</html>

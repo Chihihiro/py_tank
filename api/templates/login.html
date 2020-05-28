@@ -1,0 +1,67 @@
+<html>
+	<head>
+		<style>
+			@font-face
+			{
+				font-family: Margot_Fette;
+				{#src: url('Margot_Fette.ttf');#}
+			}
+			#login_panel
+			{
+				margin: auto;
+				margin-top: 100px;
+				width: 400px;
+				background-color: rgb(147, 224, 255);
+				text-align: center;
+			}
+			#login_title
+			{
+				background-color: rgb(92, 167, 186);
+				padding: 10px;
+				margin-bottom: 15px;
+				font-family: Margot_Fette;
+				font-size: 30px;
+				line-height: 30px;
+				color: white;
+			}
+			input
+			{
+				margin: 20px;
+			}
+			label
+			{
+				font-family: Margot_Fette;
+				color: rgb(92, 167, 186);
+			}
+			#submit_button
+			{
+				width: 300px;
+				height: 50px;
+				font-family: Margot_Fette;
+				font-size: 30px;
+				background-color: rgb(255, 66, 93);
+				color: white;
+				border: 2px solid rgb(92, 167, 186);
+			}
+		</style>
+	</head>
+	<body background="/static/images/lala2.jpg"
+      style="background-size:100% 100%; background-attachment: fixed;">
+    <div style="width:100%;text-align:center">
+		<div id = "login_panel">
+			<div id = "login_title">
+                Login
+			</div>
+			<form method = "post">
+				<label>Username</label>
+				<input type="text" name="username" />
+				</br>
+				<label>Password</label>
+				<input type="password" name="password" />
+				</br>
+				<input id = 'submit_button' type = "submit" value = "Sign in" />
+			</form>
+        </div>
+    </div>
+	</body>
+</html>
