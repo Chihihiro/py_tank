@@ -16,7 +16,8 @@ import socket
 
 
 
-engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format('root', 'Chihiro123', 'localhost', 3306, 'web', ), connect_args={"charset": "utf8"}, echo=True, )
+# engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format('root', 'Chihiro123', 'localhost', 3306, 'web', ), connect_args={"charset": "utf8"}, echo=True, )
+engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format('root', 'Chi123456###', '121.37.252.51', 3306, 'web', ), connect_args={"charset": "utf8"}, echo=True, )
 
 def read_csv(path, header="infer"):
     try:

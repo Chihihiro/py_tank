@@ -12,26 +12,52 @@ with open(path+'/v.log', 'r') as f:
 
 
 
-downlink = re.search('name: "user>>>tank>>>traffic>>>downlink"\n  value: (.+?)\n>',v).group(1)
-uplink = re.search('name: "user>>>tank>>>traffic>>>uplink"\n  value: (.+?)\n>',v).group(1)
-
-print(downlink,uplink)
-
-
-
-today = str(datetime.today().date())
-df = pd.DataFrame([{'date': today, 'uplink': int(uplink), 'downlink': int(downlink)}])
-to_sql('tank', engine, df, type="update")
-
-import time
-time.sleep(3)
-
+# downlink = re.search('name: "user>>>tank>>>traffic>>>downlink"\n  value: (.+?)\n>',v).group(1)
+# uplink = re.search('name: "user>>>tank>>>traffic>>>uplink"\n  value: (.+?)\n>',v).group(1)
 #
-# sql = "select d1.date, tank.uplink, tank.downlink,tank.uplink+tank.downlink as up_sum FROM ( \
-# SELECT date,max(update_time) AS time FROM `tank`  GROUP BY date ) as d1 \
-# JOIN tank ON d1.date = tank.date and d1.time =tank.update_time ORDER BY date DESC "
+# print(downlink,uplink)
 #
+#
+#
+# today = str(datetime.today().date())
+# df = pd.DataFrame([{'date': today, 'uplink': int(uplink), 'downlink': int(downlink)}])
+# to_sql('tank', engine, df, type="update")
+#
+# import time
+# time.sleep(3)
+
+
+sql = "select d1.date, tank.uplink, tank.downlink,tank.uplink+tank.downlink as up_sum FROM ( \
+SELECT date,max(update_time) AS time FROM `tank`  GROUP BY date ) as d1 \
+JOIN tank ON d1.date = tank.date and d1.time =tank.update_time ORDER BY date DESC "
+
+df = pd.read_sql(sql, engine)
+to_sql('tank_day', engine, df, type="update")
+
+# engine2 = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format('root', 'Chi123456###', '121.37.252.51', 3306, 'web', ), connect_args={"charset": "utf8"}, echo=True, )
+#
+# sql = "SELECT * FROM `tank_day`;"
 # df = pd.read_sql(sql, engine)
-# to_sql('tank_day', engine, df, type="update")
+# to_sql('tank_day', engine2, df, type="update")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # os.system(f'echo > {path+ "/v.log"}')

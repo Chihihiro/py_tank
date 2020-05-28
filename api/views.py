@@ -1,11 +1,6 @@
 from django.shortcuts import render, redirect
-import json
 from rest_framework.views import APIView
 from django.http import JsonResponse
-from api import models
-from rest_framework import exceptions
-from rest_framework.request import Request
-from rest_framework.authtoken.models import Token
 from api.utils.auth import MyAuthtication
 from api.utils.throttle import *
 from rest_framework.authentication import BaseAuthentication
@@ -23,102 +18,32 @@ def md5(user):
     m.update(bytes(ctime, encoding='utf-8'))
     return m.hexdigest()
 
-class Authtication(BaseAuthentication):#为了规范来继承
-    """正式的放在utils.auth中"""
-    def authenticate(self, request):
-        token = request._request.GET.get('token')
-        # token = int(kwargs.get('page'))
-        print('token',token)
-        print(request._request)
-        sql = f"SELECT `user` FROM `user_token` where token ='{token}'"
-        print(sql)
-        df = pd.read_sql(sql, engine)
-        print(df)
-
-        # 然后进行判断 如果匹配的内容不对
-        if len(df) < 1:
-            raise exceptions.AuthenticationFailed('用户认证失败111')
-        # 在rest_framework 内部会给reqeust赋值，以供后续操作使用
-        user = df.iloc[0][0]
-        return (user, token)
-
-
-    def authenticate_header(self, request):
-        pass
-
-
+# class Authtication(BaseAuthentication):#为了规范来继承
+#     """正式的放在utils.auth中"""
+#     def authenticate(self, request):
+#         token = request._request.GET.get('token')
+#         # token = int(kwargs.get('page'))
+#         print('token',token)
+#         print(request._request)
+#         sql = f"SELECT `user` FROM `user_token` where token ='{token}'"
+#         print(sql)
+#         df = pd.read_sql(sql, engine)
+#         print(df)
+#
+#         # 然后进行判断 如果匹配的内容不对
+#         if len(df) < 1:
+#             raise exceptions.AuthenticationFailed('用户认证失败111')
+#         # 在rest_framework 内部会给reqeust赋值，以供后续操作使用
+#         user = df.iloc[0][0]
+#         return (user, token)
+#
+#
+#     def authenticate_header(self, request):
+#         pass
 
 
 
 
-
-
-class AuthView(APIView):
-    """
-    token写法
-    post：{'username':'nibao', 'password': '123'}
-    :return  {
-    "state_code": 1000,
-    "msg": "请求成功",
-    "token": "83ba87e8467270cdc5b2f0368c2336a7"}
-    """
-    # 提交我们用 内置源码的post请求
-    # throttle_classes = [VisitThrottle_User, ] #访问频率控制
-    def post(self, request, *args, **kwargs):
-        # 设置状态码
-
-        ret = {"state_code": 1000, "msg": None}
-        print(ret)
-        #判断异常
-        try:
-            #原生_request改写request方法 获取前端表单里面的用户名
-            username = request._request.GET.get('username')
-            print('username=', request._request.GET.get('username'))
-            #获取前端表单里面的密码
-            password = request._request.GET.get('password')
-            print('username',password)
-            # 用变量名obj 接收数据库里的信息并进行 前端表单与数据库的匹配
-            obj = models.UserInfo.objects.filter(username=username,password=password).first()
-            print(obj)
-            #然后进行判断 如果匹配的内容不对
-            if not obj:
-                # 就发送状态码 1001
-               ret["state_code"] = 1001
-               # 用户名或者 密码错误
-               ret["msg"] = "用户名或者密码错误"
-            # 否则为登陆用户创建一个token
-            token = md5(username)
-            # 存到数据库 存在就更新,不存在就创建
-            tt = int(time.time())
-            models.UserToken.objects.update_or_create(user=obj, defaults={"token": token, 'time': tt})
-            # 发送状态码
-            ret["token"] = token
-            #告知请求成功
-            ret["msg"] = "请求成功"
-        #判断异常
-        except Exception as e:
-            # 发送状态码
-            print(e)
-            ret["state_code"] = 1002
-            # 请求异常
-            ret["msg"] = "请求异常"
-        #返回JsonResponse
-        return JsonResponse(ret)
-
-class IpView(APIView):
-    # 提交我们用 内置源码的post请求
-    authentication_classes = [MyAuthtication, ]#身份验证token
-    # authentication_classes = [Authtication, ]#身份验证
-    throttle_classes = [VisitThrottle_User, ] #访问频率控制
-    def get(self, request, *args, **kwargs):
-        # 设置状态码
-        real_ip = request.META['REMOTE_ADDR']
-        print(real_ip)
-        ret = {"state_code": 200}
-        now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        ret['ip'] = real_ip
-        ret['now'] = now
-        return JsonResponse(ret)
 
 
 class LoginView(APIView):
