@@ -230,7 +230,7 @@ class ClassView(APIView):
 
 class ClassView2(APIView):
 
-    authentication_classes = [Authtication, ]#身份验证
+    # authentication_classes = [Authtication, ]#身份验证
 
     def get(self, request, *args, **kwargs):
         pindex = int(kwargs.get('page'))
