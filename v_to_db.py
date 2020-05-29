@@ -5,6 +5,7 @@
 
 from datetime import datetime
 from iosjk import *
+os.chdir('/opt/py_tank/')
 path = os.getcwd()
 
 with open(path+'/v.log', 'r') as f:
