@@ -3,8 +3,9 @@
 # @Author  : Chihiro
 
 
-from datetime import datetime
+
 from iosjk import *
+from datetime import datetime, date, timedelta
 os.chdir('/opt/py_tank/')
 path = os.getcwd()
 
@@ -27,10 +28,16 @@ to_sql('tank', engine, df, type="update")
 import time
 time.sleep(3)
 
+now = datetime.now()
+this_week_start = str(now - timedelta(days=now.weekday()))[:19]
 
-sql = "select d1.date, tank.uplink, tank.downlink,tank.uplink+tank.downlink as up_sum FROM ( \
-SELECT date,max(update_time) AS time FROM `tank`  GROUP BY date ) as d1 \
-JOIN tank ON d1.date = tank.date and d1.time =tank.update_time ORDER BY date DESC "
+
+# sql2 = "select d1.date, tank.uplink, tank.downlink,tank.uplink+tank.downlink as up_sum FROM ( \
+# SELECT date,max(update_time) AS time FROM `tank`  GROUP BY date ) as d1 \
+# JOIN tank ON d1.date = tank.date and d1.time =tank.update_time ORDER BY date DESC "
+#
+
+sql = f"SELECT date,SUM(downlink) AS downlink, SUM(uplink) as uplink ,user, SUM(downlink+uplink) as up_sum FROM `tank` where update_time > '{this_week_start}' GROUP BY date, `user`"
 
 df = pd.read_sql(sql, engine)
 to_sql('tank_day', engine, df, type="update")

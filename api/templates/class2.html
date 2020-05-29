@@ -78,26 +78,26 @@
                 <br>
                 <h5>用户流量详情</h5>
                 <div class="row">
-                <div class="form-inline">
-                    <input id='isday' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           aria-pressed="true" value="全部" onclick="javascrtpt:window.location.href='/api/class/page1/isday'"/>
-                    <input id='isyesterday' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           value="昨天" onclick="javascrtpt:window.location.href='/api/class/page1/isyesterday'"/>
-                    <input id='istoday' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           value="今天" onclick="javascrtpt:window.location.href='/api/class/page1/istoday'"/>
-                    <input id='isweek' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           value="本周" onclick="javascrtpt:window.location.href='/api/class/page1/isweek'"/>
-                    <input id='isyear' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           value="今年" onclick="javascrtpt:window.location.href='/api/class/page1/isyear'"/>
-                    <div><input id="start" type="text" class="datepicker" placeholder="请选择日期" /></div>
-                    <div><input id="end" type="text" class="datepicker" placeholder="请选择日期" /></div>
-                    <input id='zdy' type="submit" class="btn btn-light " style="margin-left:15px;"
-                           value="自定义时间" onclick="jump()"/>
-
-
-
-
-                    </div>
+{#                <div class="form-inline">#}
+{#                    <input id='isday' type="submit" class="btn btn-light" style="margin-right:10px;"#}
+{#                           aria-pressed="true" value="全部" onclick="javascrtpt:window.location.href='/api/class/page1/isday'"/>#}
+{#                    <input id='isyesterday' type="submit" class="btn btn-light" style="margin-right:10px;"#}
+{#                           value="昨天" onclick="javascrtpt:window.location.href='/api/class/page1/isyesterday'"/>#}
+{#                    <input id='istoday' type="submit" class="btn btn-light" style="margin-right:10px;"#}
+{#                           value="今天" onclick="javascrtpt:window.location.href='/api/class/page1/istoday'"/>#}
+{#                    <input id='isweek' type="submit" class="btn btn-light" style="margin-right:10px;"#}
+{#                           value="本周" onclick="javascrtpt:window.location.href='/api/class/page1/isweek'"/>#}
+{#                    <input id='isyear' type="submit" class="btn btn-light" style="margin-right:10px;"#}
+{#                           value="今年" onclick="javascrtpt:window.location.href='/api/class/page1/isyear'"/>#}
+{#                    <div><input id="start" type="text" class="datepicker" placeholder="请选择日期" /></div>#}
+{#                    <div><input id="end" type="text" class="datepicker" placeholder="请选择日期" /></div>#}
+{#                    <input id='zdy' type="submit" class="btn btn-light " style="margin-left:15px;"#}
+{#                           value="自定义时间" onclick="jump()"/>#}
+{##}
+{##}
+{##}
+{##}
+{#                    </div>#}
 {#                    </div>#}
                 </div>
             </div>
@@ -116,7 +116,7 @@
                     <tbody>
                     {% for i in class_list %}
                         <tr>
-                            <td class="days" style="width:30%">tank</td>
+                            <td class="days" style="width:30%">{{ i.3 }}</td>
 {#                            <td style="width:8%">{{ i.0 }}</td>#}
                             <td class="sum1" style="width:8%"><a
                                     style="color: #99CDF4; background: #D3EAFA; padding: 1mm; font-size:12px; font-weight: 700">{{ i.0 }}</a>
@@ -126,7 +126,8 @@
                             </td>
                             <td class="uplink" style="width:8%"><a style="color: #F8A677; background: #FCE3D0; padding: 1mm; font-size:12px; font-weight: 700">{{ i.2 }}</a></td>
                             <td class="uplink" style="width:46%">
-                                <button type="button" style="width:8%; height: 30px" class="btn btn-primary btn-sm" data-toggle="button" aria-pressed="false" autocomplete="off" onclick="javascrtpt:window.location.href='/api/class/page1/isday'">查看</button></td>
+                                <button type="button" style="width:8%; height: 30px" class="btn btn-primary btn-sm" data-toggle="button" aria-pressed="false" autocomplete="off" onclick="javascrtpt:window.location.href='/api/class/page1/isday/user{{ i.3 }}'">查看</button>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>

@@ -79,16 +79,17 @@
                 <h5>用户流量详情</h5>
                 <div class="row">
                 <div class="form-inline">
+
                     <input id='isday' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           aria-pressed="true" value="全部" onclick="javascrtpt:window.location.href='/api/class/page1/isday'"/>
+                           aria-pressed="true" value="全部" onclick="javascrtpt:window.location.href='/api/class/page1/isday/user{{ class_list.0.4 }}'"/>
                     <input id='isyesterday' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           value="昨天" onclick="javascrtpt:window.location.href='/api/class/page1/isyesterday'"/>
+                           value="昨天" onclick="javascrtpt:window.location.href='/api/class/page1/isyesterday/user{{ class_list.0.4 }}'"/>
                     <input id='istoday' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           value="今天" onclick="javascrtpt:window.location.href='/api/class/page1/istoday'"/>
+                           value="今天" onclick="javascrtpt:window.location.href='/api/class/page1/istoday/user{{ class_list.0.4 }}'"/>
                     <input id='isweek' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           value="本周" onclick="javascrtpt:window.location.href='/api/class/page1/isweek'"/>
+                           value="本周" onclick="javascrtpt:window.location.href='/api/class/page1/isweek/user{{ class_list.0.4 }}'"/>
                     <input id='isyear' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           value="今年" onclick="javascrtpt:window.location.href='/api/class/page1/isyear'"/>
+                           value="今年" onclick="javascrtpt:window.location.href='/api/class/page1/isyear/user{{ class_list.0.4 }}'"/>
                     <div><input id="start" type="text" class="datepicker" placeholder="请选择日期" /></div>
                     <div><input id="end" type="text" class="datepicker" placeholder="请选择日期" /></div>
                     <input id='zdy' type="submit" class="btn btn-light " style="margin-left:15px;"
@@ -129,7 +130,7 @@
                     {% for i in class_list %}
                         <tr>
                             <td class="days" style="width:15%">{{ i.0 }}</td>
-                            <td style="width:25%">tank</td>
+                            <td style="width:25%">{{ i.4 }}</td>
                             <td class="sum1" style="width:10%"><a
                                     style="color: #99CDF4; background: #D3EAFA; padding: 1mm; font-size:12px; font-weight: 700">{{ i.1 }}</a>
                             </td>
@@ -241,18 +242,19 @@
     var page = parseInt(url2.match(/\d+/)[0]);
     {#console.log(page);#}
     var z = url1.match(/is\w+/)[0]
+    var user = url1.match(/user\w+/)[0]
     obj = $("#pag")
-    if (page<=1){obj.append('<li class="page-item disabled"><a class="page-link" href="/api/class/page'+(page-1)+'/'+z+'">Previous</a></li>');}
+    if (page<=1){obj.append('<li class="page-item disabled"><a class="page-link" href="/api/class/page'+(page-1)+'/'+z+'/'+user+'">Previous</a></li>');}
     else{
-        obj.append('<li class="page-item"><a class="page-link" href="/api/class/page'+(page-1)+'/'+z+'">Previous</a></li>')
+        obj.append('<li class="page-item"><a class="page-link" href="/api/class/page'+(page-1)+'/'+z+'/'+user+'">Previous</a></li>')
     }
 
     if (page<=2){
         for (i = page; i < page+5; i++) {
         if (i===page) {
-            obj.append('<li class="page-item active" onclick="click_active()"><a class="page-link" href="/api/class/page' + i +'/'+z+ '">' + i + '</a></li>')
+            obj.append('<li class="page-item active" onclick="click_active()"><a class="page-link" href="/api/class/page' + i +'/'+z+'/'+user+ '">' + i + '</a></li>')
         }else {
-            obj.append('<li class="page-item" onclick="click_active()"><a class="page-link" href="/api/class/page' + i +'/'+z+ '">' + i + '</a></li>')
+            obj.append('<li class="page-item" onclick="click_active()"><a class="page-link" href="/api/class/page' + i +'/'+z+'/'+user+ '">' + i + '</a></li>')
         }}
 
     }
@@ -261,13 +263,13 @@
     for (i = page-2; i < page+3; i++) {
         console.log(i)
         if (i===page) {
-            obj.append('<li class="page-item active" onclick="click_active()"><a class="page-link" href="/api/class/page' + i +'/'+z+ '">' + i + '</a></li>')
+            obj.append('<li class="page-item active" onclick="click_active()"><a class="page-link" href="/api/class/page' + i +'/'+z+'/'+user+ '">' + i + '</a></li>')
         }else {
-            obj.append('<li class="page-item" onclick="click_active()"><a class="page-link" href="/api/class/page' + i +'/'+z+ '">' + i + '</a></li>')
+            obj.append('<li class="page-item" onclick="click_active()"><a class="page-link" href="/api/class/page' + i +'/'+z+'/'+user+ '">' + i + '</a></li>')
         }}}
 
 
-    obj.append('<li class="page-item"><a class="page-link" href="/api/class/page'+(page+1)+'/'+z+'">Next</a></li>');
+    obj.append('<li class="page-item"><a class="page-link" href="/api/class/page'+(page+1)+'/'+z+'/'+user+'">Next</a></li>');
 
 </script>
 
@@ -309,7 +311,7 @@
     function jump(){
         var s = $("#start").val();
         var e = $("#end").val();
-        window.location.href="/api/class/page1/iszdy"+s+e;}
+        window.location.href="/api/class/page1/iszdy"+s+e+"/user{{ class_list.0.4 }}";}
 </script>
 </body>
 

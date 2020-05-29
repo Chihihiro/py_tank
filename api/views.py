@@ -5,8 +5,6 @@ from api.utils.auth import MyAuthtication
 from api.utils.throttle import *
 from rest_framework.authentication import BaseAuthentication
 from iosjk import *
-import time
-from api.utils.pe import *
 from datetime import datetime, date, timedelta
 
 def md5(user):
@@ -115,13 +113,15 @@ class LoginView(APIView):
 
 
 def GB_MB(num):
+    if num < 1024:
+        return str(int(num))+'KB'
     r_num = num/1024
-    if r_num < 999:
+    if r_num < 1024:
         return str(int(r_num))+'MB'
     else:
         g_num = int(r_num / 1024)
 
-        if g_num < 999:
+        if g_num < 1024:
             return str(g_num) + 'GB'
         return str(int(g_num / 1024)) + 'TB'
 
@@ -137,6 +137,10 @@ class ClassView(APIView):
         print(pindex)
         day_type = kwargs.get('type')
         print(day_type,'~~~~~~~~~~')
+
+        user = kwargs.get('user')[4:]
+        print(user,'~~~~~~~~~~')
+
         num = 6
         if pindex ==1:
             p_start=0
@@ -144,7 +148,8 @@ class ClassView(APIView):
             p_start = (pindex-1)*num
 
         if day_type =="isday":
-            sql1 = f"SELECT date,up_sum, downlink, uplink  FROM `tank_day` ORDER BY date DESC  LIMIT {p_start}, {num};"
+            # sql1 = f"-- SELECT date,up_sum, downlink, uplink  FROM `tank_day` ORDER BY date DESC  LIMIT {p_start}, {num};"
+            sql1 = f"SELECT  date, sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink,user FROM `tank_day` WHERE `user`='{user}' GROUP  BY `user`,date ORDER BY date  LIMIT {p_start}, {num};"
             df = pd.read_sql(sql1, engine)
             df['date'] = df['date'].apply(lambda x: str(x))
             df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
@@ -156,23 +161,33 @@ class ClassView(APIView):
         if day_type=="isyesterday":
             tt = str(datetime.today()-timedelta(days=1))[0:10]
             print(tt)
-            sql1 = f"SELECT update_time, uplink+downlink as up_sum, downlink,uplink FROM `tank` \
+            sqlpass = f"SELECT update_time, uplink+downlink as up_sum, downlink,uplink FROM `tank` \
                     WHERE date = '{tt}' ORDER BY update_time DESC  LIMIT {p_start}, {num};"
+
+            sql1 = f"SELECT hour(update_time) as date, sum(uplink+downlink) as up_sum, sum(downlink) as downlink, sum(uplink) as uplink, user \
+                    FROM tank WHERE  user='{user}' and date(update_time)='{tt}' \
+                    group by date(update_time),hour(update_time) ORDER BY date LIMIT {p_start}, {num};"
+
             df = pd.read_sql(sql1, engine)
-            df['update_time'] = df['update_time'].apply(lambda x: str(x)[11:])
+            df['date'] = df['date'].apply(lambda x: str(x)+':00-'+str(x+1)+':00')
             df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
             df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
             df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
             cc = df.values.tolist()
+            print(cc)
             return render(request, 'class.html', {'class_list': cc})
 
         if day_type=="istoday":
             tt = str(datetime.today()-timedelta(days=0))[0:10]
             print(tt)
-            sql1 = f"SELECT update_time, uplink+downlink as up_sum, downlink, uplink FROM `tank` \
+            sqlpass = f"SELECT update_time, uplink+downlink as up_sum, downlink, uplink FROM `tank` \
                     WHERE date = '{tt}' ORDER BY update_time DESC  LIMIT {p_start}, {num};"
+            sql1 = f"SELECT hour(update_time) as date, sum(uplink+downlink) as up_sum, sum(downlink) as downlink, sum(uplink) as uplink, user \
+                    FROM tank WHERE  user='{user}' and date(update_time)='{tt}' \
+                    group by date(update_time),hour(update_time) ORDER BY date LIMIT {p_start}, {num};"
+
             df = pd.read_sql(sql1, engine)
-            df['update_time'] = df['update_time'].apply(lambda x: str(x)[11:])
+            df['date'] = df['date'].apply(lambda x: str(x)+':00-'+str(x+1)+':00')
             df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
             df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
             df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
@@ -183,8 +198,8 @@ class ClassView(APIView):
             now = datetime.now()
             this_week_start = str(now - timedelta(days=now.weekday()))[0:10]
             this_week_end = str(now + timedelta(days=6 - now.weekday()))[0:10]
-            sql1 = f"SELECT date, uplink+downlink as up_sum,downlink, uplink FROM `tank_day` \
-                    WHERE date  BETWEEN '{this_week_start}' AND '{this_week_end}' ORDER BY date DESC  LIMIT {p_start}, {num};"
+            sql1 = f"SELECT date, uplink+downlink as up_sum,downlink, uplink, user FROM `tank_day` \
+                    WHERE date  BETWEEN '{this_week_start}' AND '{this_week_end}' and user='{user}' ORDER BY date  LIMIT {p_start}, {num};"
             df = pd.read_sql(sql1, engine)
             df['date'] = df['date'].apply(lambda x: str(x))
             df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
@@ -194,8 +209,12 @@ class ClassView(APIView):
             return render(request, 'class.html', {'class_list': cc})
 
         if day_type=="isyear":
-            sql1 = f"SELECT concat(year(date),if(month(date)>=10,'',0),month(date)) as date, SUM(up_sum) as up_sum, SUM(downlink) as downlink, sum(uplink) as uplink \
+            sqlpass = f"SELECT concat(year(date),if(month(date)>=10,'',0),month(date)) as date, SUM(up_sum) as up_sum, SUM(downlink) as downlink, sum(uplink) as uplink \
                  FROM `tank_day` GROUP BY concat(year(date),if(month(date)>=10,'',0),month(date)) ORDER BY date DESC LIMIT {p_start}, {num};"
+
+            sql1 = f"SELECT concat(year(date),if(month(date)>=10,'',0),month(date)) as date, SUM(up_sum) as up_sum, SUM(downlink) as downlink, sum(uplink) as uplink, user  \
+                    FROM `tank_day` WHERE `user`='{user}' GROUP BY concat(year(date),if(month(date)>=10,'',0),month(date))  ORDER BY date LIMIT {p_start}, {num};"
+
             df = pd.read_sql(sql1, engine)
             df['date'] = df['date'].apply(lambda x: str(x)[0:4]+'-'+str(x)[-2:])
             df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
@@ -210,7 +229,10 @@ class ClassView(APIView):
             strat = day_type[5:15]
             end = day_type[15:25]
             print(strat, end)
-            sql1 = f"SELECT date, uplink, downlink,up_sum FROM `tank_day` where date between '{strat}' and  '{end}' ORDER BY date DESC  LIMIT {p_start}, {num};"
+            sqlpass = f"SELECT date, uplink, downlink,up_sum FROM `tank_day` where date between '{strat}' and  '{end}' ORDER BY date DESC  LIMIT {p_start}, {num};"
+
+            sql1 = f"SELECT  date, sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink,user FROM `tank_day` WHERE `user`='{user}' and date between '{strat}' and  '{end}' GROUP BY `user`,date ORDER BY date  LIMIT {p_start}, {num};"
+
             df = pd.read_sql(sql1, engine)
             df['date'] = df['date'].apply(lambda x: str(x))
             df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
@@ -243,11 +265,11 @@ class ClassView2(APIView):
         else:
             p_start = (pindex - 1) * num
 
-        if day_type == "isday":
-            sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink FROM `tank_day`;"
-            df = pd.read_sql(sql1, engine)
-            df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
-            df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
-            df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
-            cc = df.values.tolist()
-            return render(request, 'class2.html', {'class_list': cc})
+        # if day_type == "isday":
+        sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` GROUP  BY `user`"
+        df = pd.read_sql(sql1, engine)
+        df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
+        df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
+        df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
+        cc = df.values.tolist()
+        return render(request, 'class2.html', {'class_list': cc})
