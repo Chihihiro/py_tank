@@ -223,8 +223,9 @@
     var url1 = window.location.href;
     var url2 = url1.match(/page\d+/)[0];
     var page = parseInt(url2.match(/\d+/)[0]);
-    console.log(page);
-    var z = url1.match(/is\w+/)[0]
+
+    var z = url1.match(/is(.?)+/)[0];
+    console.log(z);
     obj = $("#pag")
     if (page<=1){obj.append('<li class="page-item disabled"><a class="page-link" href="/api/class2/page'+(page-1)+'/'+z+'">Previous</a></li>');}
     else{
@@ -293,7 +294,7 @@
     function jump(){
         var s = $("#start").val();
         var e = $("#end").val();
-        window.location.href="/api/class/page1/iszdy"+s+e;}
+        window.location.href="/api/class2/page1/iszdy"+s+e;}
 </script>
 </body>
 

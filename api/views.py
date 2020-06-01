@@ -323,6 +323,20 @@ class ClassView2(APIView):
             return render(request, 'class2.html', {'class_list': cc})
 
 
+        if day_type[0:5] =="iszdy":
+            strat = day_type[5:15]
+            end = day_type[15:25]
+
+            sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{strat}' and '{end}' GROUP  BY `user`  LIMIT {p_start}, {num};"
+            print(sql1)
+            df = pd.read_sql(sql1, engine)
+            df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
+            df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
+            df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
+            cc = df.values.tolist()
+            return render(request, 'class2.html', {'class_list': cc})
+
+
 
 
 
