@@ -266,7 +266,8 @@ class ClassView2(APIView):
             p_start = (pindex - 1) * num
 
         # if day_type == "isday":
-        sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` GROUP  BY `user`"
+        sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` GROUP  BY `user`  LIMIT {p_start}, {num};"
+        print(sql1)
         df = pd.read_sql(sql1, engine)
         df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
         df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
