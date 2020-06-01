@@ -265,12 +265,64 @@ class ClassView2(APIView):
         else:
             p_start = (pindex - 1) * num
 
-        # if day_type == "isday":
-        sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` GROUP  BY `user`  LIMIT {p_start}, {num};"
-        print(sql1)
-        df = pd.read_sql(sql1, engine)
-        df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
-        df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
-        df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
-        cc = df.values.tolist()
-        return render(request, 'class2.html', {'class_list': cc})
+        if day_type == "isday":
+            sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` GROUP  BY `user`  LIMIT {p_start}, {num};"
+            df = pd.read_sql(sql1, engine)
+            df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
+            df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
+            df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
+            cc = df.values.tolist()
+            return render(request, 'class2.html', {'class_list': cc})
+
+        if day_type=="isyesterday":
+            tt = str(datetime.today()-timedelta(days=1))[0:10]
+            sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date = '{tt}' GROUP  BY `user`  LIMIT {p_start}, {num};"
+            print(sql1)
+            df = pd.read_sql(sql1, engine)
+            df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
+            df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
+            df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
+            cc = df.values.tolist()
+            return render(request, 'class2.html', {'class_list': cc})
+
+        if day_type=="istoday":
+            tt = str(datetime.today()-timedelta(days=0))[0:10]
+            sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day`  where date = '{tt}' GROUP  BY `user`  LIMIT {p_start}, {num};"
+            print(sql1)
+            df = pd.read_sql(sql1, engine)
+            df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
+            df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
+            df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
+            cc = df.values.tolist()
+            return render(request, 'class2.html', {'class_list': cc})
+
+
+        if day_type=="isweek":
+            now = datetime.now()
+            this_week_start = str(now - timedelta(days=now.weekday()))[0:10]
+            this_week_end = str(now + timedelta(days=6 - now.weekday()))[0:10]
+            sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{this_week_start}' and '{this_week_end}' GROUP  BY `user`  LIMIT {p_start}, {num};"
+            print(sql1)
+            df = pd.read_sql(sql1, engine)
+            df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
+            df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
+            df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
+            cc = df.values.tolist()
+            return render(request, 'class2.html', {'class_list': cc})
+
+
+        if day_type=="isyear":
+            tt = str(datetime.today()-timedelta(days=1))[0:4]
+            sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date like '{tt}%%' GROUP  BY `user`  LIMIT {p_start}, {num};"
+            print(sql1)
+            df = pd.read_sql(sql1, engine)
+            df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
+            df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
+            df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
+            cc = df.values.tolist()
+            return render(request, 'class2.html', {'class_list': cc})
+
+
+
+
+
