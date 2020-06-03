@@ -16,8 +16,10 @@ urlpatterns = [
     # url(r'^(?P<version>\w+)/ip/$',  IpView.as_view()),
     # url(r'^(?P<version>\w+)/login/$',  LoginView.as_view()),
     url(r'^login/$',  LoginView.as_view()),
+    url(r'^html3/$',  html3View.as_view()),
     url(r'^class/page(?P<page>\d+)/(?P<type>.*?)/(?P<user>.*?)$',  ClassView.as_view()),
     url(r'^class2/page(?P<page>\d+)/(?P<type>.*?)$',  ClassView2.as_view()),
+    url(r'^class3/page(?P<page>\d+)/(?P<type>.*?)$',  ClassView3.as_view()),
 
 
 

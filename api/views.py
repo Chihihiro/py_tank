@@ -141,7 +141,7 @@ class ClassView(APIView):
         user = kwargs.get('user')[4:]
         print(user,'~~~~~~~~~~')
 
-        num = 6
+        num = 50
         if pindex ==1:
             p_start=0
         else:
@@ -157,6 +157,7 @@ class ClassView(APIView):
             df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
             cc = df.values.tolist()
             return render(request, 'class.html', {'class_list': cc})
+
 
         if day_type=="isyesterday":
             tt = str(datetime.today()-timedelta(days=1))[0:10]
@@ -196,10 +197,16 @@ class ClassView(APIView):
 
         if day_type=="isweek":
             now = datetime.now()
-            this_week_start = str(now - timedelta(days=now.weekday()))[0:10]
-            this_week_end = str(now + timedelta(days=6 - now.weekday()))[0:10]
-            sql1 = f"SELECT date, uplink+downlink as up_sum,downlink, uplink, user FROM `tank_day` \
-                    WHERE date  BETWEEN '{this_week_start}' AND '{this_week_end}' and user='{user}' ORDER BY date  LIMIT {p_start}, {num};"
+            # this_week_start = str(now - timedelta(days=now.weekday()))[0:10]
+            # this_week_end = str(now + timedelta(days=6 - now.weekday()))[0:10]
+            today = str(datetime.now())
+            day_7 = str(now - timedelta(days=7))[0:10]
+            # sql1 = f"SELECT date, uplink+downlink as up_sum,downlink, uplink, user FROM `tank_day` \
+            #         WHERE date  BETWEEN '{this_week_start}' AND '{this_week_end}' and user='{user}' ORDER BY date  LIMIT {p_start}, {num};"
+            sql1 = f"SELECT CONCAT(date(update_time),' ',HOUR(update_time),':00')  as date, sum(uplink+downlink) as up_sum, sum(downlink) as downlink, sum(uplink) as uplink, user \
+                    FROM tank WHERE  user='tank' and date(update_time) BETWEEN '{day_7}' and  '{today}' \
+                    group by CONCAT(date(update_time),' ',HOUR(update_time),':00')  ORDER BY date LIMIT {p_start}, {num};"
+
             df = pd.read_sql(sql1, engine)
             df['date'] = df['date'].apply(lambda x: str(x))
             df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
@@ -259,7 +266,8 @@ class ClassView2(APIView):
         print(pindex)
         day_type = kwargs.get('type')
         print(day_type, '~~~~~~~~~~')
-        num = 13
+        # num = 13
+        num = 50
         if pindex == 1:
             p_start = 0
         else:
@@ -301,7 +309,9 @@ class ClassView2(APIView):
             now = datetime.now()
             this_week_start = str(now - timedelta(days=now.weekday()))[0:10]
             this_week_end = str(now + timedelta(days=6 - now.weekday()))[0:10]
-            sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{this_week_start}' and '{this_week_end}' GROUP  BY `user`  LIMIT {p_start}, {num};"
+            today = str(datetime.now())
+            day_7 = str(now - timedelta(days=7))[0:10]
+            sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{day_7}' and '{today}' GROUP  BY `user`  LIMIT {p_start}, {num};"
             print(sql1)
             df = pd.read_sql(sql1, engine)
             df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
@@ -309,6 +319,7 @@ class ClassView2(APIView):
             df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
             cc = df.values.tolist()
             return render(request, 'class2.html', {'class_list': cc})
+
 
 
         if day_type=="isyear":
@@ -337,6 +348,42 @@ class ClassView2(APIView):
             return render(request, 'class2.html', {'class_list': cc})
 
 
+
+class ClassView3(APIView):
+
+    # authentication_classes = [Authtication, ]#身份验证
+
+    def get(self, request, *args, **kwargs):
+        pindex = int(kwargs.get('page'))
+        print(pindex)
+        day_type = kwargs.get('type')
+        print(day_type, '~~~~~~~~~~')
+        num = 13
+        if pindex == 1:
+            p_start = 0
+        else:
+            p_start = (pindex - 1) * num
+
+        if day_type == "isday":
+            sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` GROUP  BY `user`  LIMIT {p_start}, {num};"
+            df = pd.read_sql(sql1, engine)
+            print(df)
+            df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
+            df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
+            df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
+            cc = df.values.tolist()
+            print(cc)
+            return JsonResponse({"data": cc})
+
+
+
+
+
+class html3View(APIView):
+    # throttle_classes = [VisitThrottle_User, ]  # 访问频率控制
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'class3.html')
 
 
 

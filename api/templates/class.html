@@ -22,12 +22,14 @@
     <style>
 
         .container-fluid > .row > .rightSide {
-            height: 960px;
+            {#height: 960px;#}
+            height: 3020px;
             background-color: #EEEEEE;
         }
 
         .container-fluid > .row > .leftCont {
-            height: 960px;
+            {#height: 960px;#}
+            height: 3020px;
             background-color: #000B43;
         }
 
@@ -42,7 +44,7 @@
 
         #part2 {
             background-color: #FFFFFF;
-            height: 360px;
+            height: 2510px;
             border-color: #EEEEEE;
             border-style: groove;
             border-radius: 5px
@@ -59,7 +61,8 @@
 <div class="container-fluid" style="overflow:hidden;">
     <div class="row">
         {#        <div id="user_table" class="col text-white bg-primary" >用户1111</div>#}
-        <div class="leftCont col-1 " style="height: 960px">
+        <div class="leftCont col-1 " style="height: 3150px">
+{#            #调整总高低#}
             <br>
             <br>
             <div>
@@ -81,15 +84,15 @@
                 <div class="form-inline">
 
                     <input id='isday' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           aria-pressed="true" value="全部" onclick="javascrtpt:window.location.href='/api/class/page1/isday/user{{ class_list.0.4 }}'"/>
+                           aria-pressed="true" value="全部" onclick="jump0()"/>
                     <input id='isyesterday' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           value="昨天" onclick="javascrtpt:window.location.href='/api/class/page1/isyesterday/user{{ class_list.0.4 }}'"/>
+                           value="昨天" onclick="jump2()"/>
                     <input id='istoday' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           value="今天" onclick="javascrtpt:window.location.href='/api/class/page1/istoday/user{{ class_list.0.4 }}'"/>
+                           value="今天" onclick="jump1()"/>
                     <input id='isweek' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           value="本周" onclick="javascrtpt:window.location.href='/api/class/page1/isweek/user{{ class_list.0.4 }}'"/>
+                           value="本周" onclick="jump3()"/>
                     <input id='isyear' type="submit" class="btn btn-light" style="margin-right:10px;"
-                           value="今年" onclick="javascrtpt:window.location.href='/api/class/page1/isyear/user{{ class_list.0.4 }}'"/>
+                           value="今年" onclick="jump4()"/>
                     <div><input id="start" type="text" class="datepicker" placeholder="请选择日期" /></div>
                     <div><input id="end" type="text" class="datepicker" placeholder="请选择日期" /></div>
                     <input id='zdy' type="submit" class="btn btn-light " style="margin-left:15px;"
@@ -222,20 +225,6 @@
             color: "#F8A677"
         }]
     };
-{#    option = {#}
-{#    xAxis: {#}
-{#        type: 'category',#}
-{#        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']#}
-{#    },#}
-{#    yAxis: {#}
-{#        type: 'value'#}
-{#    },#}
-{#    series: [{#}
-{#        data: [120, 200, 150, 80, 70, 110, 130],#}
-{#        type: 'bar'#}
-{#    }]#}
-{#};#}
-
 
 
     // 使用刚指定的配置项和数据显示图表。
@@ -327,6 +316,37 @@
         var e = $("#end").val();
         window.location.href="/api/class/page1/iszdy"+s+e+"/user{{ class_list.0.4 }}";}
 </script>
+
+
+<script>
+    function jump0(){
+        var url1 = window.location.href;
+        var user = url1.match(/user\w+/)[0]
+        window.location.href="/api/class/page1/isday/"+user;}
+
+    function jump1(){
+        var url1 = window.location.href;
+        var user = url1.match(/user\w+/)[0]
+        window.location.href="/api/class/page1/istoday/"+user;}
+
+    function jump2(){
+        var url1 = window.location.href;
+        var user = url1.match(/user\w+/)[0]
+        window.location.href="/api/class/page1/isyesterday/"+user;}
+
+    function jump3(){
+        var url1 = window.location.href;
+        var user = url1.match(/user\w+/)[0]
+        window.location.href="/api/class/page1/isweek/"+user;}
+
+    function jump4(){
+        var url1 = window.location.href;
+        var user = url1.match(/user\w+/)[0]
+        window.location.href="/api/class/page1/isyear/"+user;}
+</script>
+
+
+
 </body>
 
 </html>

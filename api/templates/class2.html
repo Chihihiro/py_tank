@@ -2,8 +2,14 @@
 <html lang="zh-cn">
 <head>
     <meta charset="utf-8">
+    <script src="/static/js/popper.min.js"></script>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/bootstrap-datepicker3.css">
+
+
+
+
+
     <script src="/static/jquery-3.4.1.min.js"></script>
     <script src="/static/js/bootstrap.js"></script>
     <script src="/static/js/popper.js"></script>
@@ -18,16 +24,21 @@
 
 
 
+
+
+
     <link href="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
     <style>
 
         .container-fluid > .row > .rightSide {
-            height: 960px;
+            height: 3120px;
+            {#height: 960px;#}
             background-color: #EEEEEE;
         }
 
         .container-fluid > .row > .leftCont {
-            height: 960px;
+            height: 3120px;
+            {#height: 960px;#}
             background-color: #000B43;
         }
 
@@ -42,7 +53,8 @@
 
         #part2 {
             background-color: #FFFFFF;
-            height: 770px;
+            {#height: 780px;#}
+            height: 2800px;
             border-color: #EEEEEE;
             border-style: groove;
             border-radius: 5px
@@ -59,7 +71,7 @@
 <div class="container-fluid" style="overflow:hidden;">
     <div class="row">
         {#        <div id="user_table" class="col text-white bg-primary" >用户1111</div>#}
-        <div class="leftCont col-1 " style="height: 960px">
+        <div class="leftCont col-1 " >
             <br>
             <br>
             <div>
@@ -96,6 +108,7 @@
                     </div>
                 </div>
             </div>
+            <br>
             <div class="col" id="part2">
                 <table class="table table-hover" id="table1">
                     <thead>
@@ -129,6 +142,7 @@
             </div>
             <br>
             <div class="col">
+
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-center" id="pag">
 {#                            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">Previous</a></li>#}
@@ -138,8 +152,22 @@
 {#                            <li class="page-item" onclick="click_active()"><a class="page-link" href="#">4</a></li>#}
 {#                            <li class="page-item" onclick="click_active()"><a class="page-link" href="#">5</a></li>#}
 {#                            <li class="page-item"><a class="page-link" href="#">Next</a></li>#}
+
+                            <div class="dropdown" style="right: 20px;">
+                              <button class="btn btn-primary dropdown-toggle active" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                50
+                              </button>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item active" href="#">50</a>
+                                <a class="dropdown-item" href="#">100</a>
+                                <a class="dropdown-item" href="#">200</a>
+                              </div>
+                            </div>
+
+
                         </ul>
                     </nav>
+
 
             </div>
 
@@ -286,16 +314,17 @@
         });
     });
 </script>
-<script>
-    {#$(".datepicker").datepicker("getDate").toLocaleString();//获取#}
-    {#$(".datepicker").datepicker("setDate", '2014-01-25');//设置#}
-</script>
+
 <script>
     function jump(){
         var s = $("#start").val();
         var e = $("#end").val();
         window.location.href="/api/class2/page1/iszdy"+s+e;}
 </script>
+
+
+
+
 </body>
 
 </html>
