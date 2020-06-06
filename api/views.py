@@ -351,7 +351,7 @@ class Class2View(APIView):
 
 
     def post(self, request, *args, **kwargs):
-        ret = {'code': 0, 'data': None, "detail": "", "message": None}
+        ret = {'code': 0, 'data': None, "detail": "", "message": None, 'page': None, 'total': None}
         try:
             print('到post了')
 
@@ -381,8 +381,10 @@ class Class2View(APIView):
                 sql2 = f"select COUNT(1) from (SELECT  date, sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink,user FROM `tank_day` WHERE `user`='{user}' GROUP  BY `user`,date ORDER BY date ) as tt"
 
                 df2 = pd.read_sql(sql2, engine)
-                total = df2.iloc[0][0]
+                total = int(df2.iloc[0][0])
                 page = int(total / num) + 1
+
+                print(type(page), type(total))
 
                 df = pd.read_sql(sql1, engine)
                 df['date'] = df['date'].apply(lambda x: str(x))
@@ -414,7 +416,7 @@ class Class2View(APIView):
                         group by date(update_time),hour(update_time) ORDER BY date ) AS TTT"
 
                 df2 = pd.read_sql(sql2, engine)
-                total = df2.iloc[0][0]
+                total = int(df2.iloc[0][0])
                 page = int(total / num) + 1
 
                 df = pd.read_sql(sql1, engine)
@@ -446,7 +448,7 @@ class Class2View(APIView):
                         group by date(update_time),hour(update_time) ORDER BY date ) AS TTT"
 
                 df2 = pd.read_sql(sql2, engine)
-                total = df2.iloc[0][0]
+                total = int(df2.iloc[0][0])
                 page = int(total / num) + 1
 
                 df = pd.read_sql(sql1, engine)
@@ -482,7 +484,7 @@ class Class2View(APIView):
 
 
                 df2 = pd.read_sql(sql2, engine)
-                total = df2.iloc[0][0]
+                total = int(df2.iloc[0][0])
                 page = int(total / num) + 1
 
 
@@ -519,7 +521,7 @@ class Class2View(APIView):
 
 
                 df2 = pd.read_sql(sql2, engine)
-                total = df2.iloc[0][0]
+                total = int(df2.iloc[0][0])
                 page = int(total / num) + 1
 
 
@@ -552,7 +554,7 @@ class Class2View(APIView):
                         FROM `tank_day` WHERE `user`='{user}' GROUP BY concat(year(date),if(month(date)>=10,'',0),month(date))  ORDER BY date ) AS TTT"
 
                 df2 = pd.read_sql(sql2, engine)
-                total = df2.iloc[0][0]
+                total = int(df2.iloc[0][0])
                 page = int(total / num) + 1
 
 
@@ -584,7 +586,7 @@ class Class2View(APIView):
 
 
                 df2 = pd.read_sql(sql2, engine)
-                total = df2.iloc[0][0]
+                total = int(df2.iloc[0][0])
                 page = int(total / num) + 1
 
                 df = pd.read_sql(sql1, engine)
@@ -617,7 +619,7 @@ class IndexView(APIView):
     # authentication_classes = [Authtication, ]#身份验证
 
     def get(self, request, *args, **kwargs):
-        ret = {'code': 0, 'data': None, "detail": "", "message": None}
+        ret = {'code': 0, 'data': None, "detail": "", "message": None, 'page': None, 'total': None}
         pindex = int(kwargs.get('page'))
         print(pindex)
         day_type = kwargs.get('type')
@@ -748,7 +750,7 @@ class Index2View(APIView):
     # authentication_classes = [Authtication, ]#身份验证
 
     def post(self, request, *args, **kwargs):
-        ret = {'code': 0, 'data': None, "detail": "", "message": None}
+        ret = {'code': 0, 'data': None, "detail": "", "message": None, 'page': None, 'total': None}
         print('到post了')
 
         print(request.data)
@@ -770,6 +772,15 @@ class Index2View(APIView):
         try:
             if day_type == "day":
                 sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` GROUP  BY `user`  LIMIT {p_start}, {num};"
+
+                sql2 = f"SELECT COUNT(1) FROM (SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` GROUP  BY `user` ) AS TTT"
+
+
+                df2 = pd.read_sql(sql2, engine)
+                total = int(df2.iloc[0][0])
+                page = int(total / num) + 1
+
+
                 df = pd.read_sql(sql1, engine)
                 df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
                 df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
@@ -777,6 +788,8 @@ class Index2View(APIView):
                 cc = df.values.tolist()
                 ret['code'] = 200
                 ret['data'] = cc
+                ret['total'] = total
+                ret['page'] = page
                 ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
                 return HttpResponse(ret)
 
@@ -784,7 +797,13 @@ class Index2View(APIView):
             if day_type=="yesterday":
                 tt = str(datetime.today()-timedelta(days=1))[0:10]
                 sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date = '{tt}' GROUP  BY `user`  LIMIT {p_start}, {num};"
-                print(sql1)
+                sql2 = f"SELECT COUNT(1) FROM (SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date = '{tt}' GROUP  BY `user` ) AS TTT"
+
+
+                df2 = pd.read_sql(sql2, engine)
+                total = int(df2.iloc[0][0])
+                page = int(total / num) + 1
+
                 df = pd.read_sql(sql1, engine)
                 df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
                 df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
@@ -793,13 +812,21 @@ class Index2View(APIView):
                 # return render(request, 'class2.html', {'class_list': cc})
                 ret['code'] = 200
                 ret['data'] = cc
+                ret['total'] = total
+                ret['page'] = page
                 ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
                 return HttpResponse(ret)
 
             if day_type=="today":
                 tt = str(datetime.today()-timedelta(days=0))[0:10]
                 sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day`  where date = '{tt}' GROUP  BY `user`  LIMIT {p_start}, {num};"
+                sql2 = f"SELECT COUNT(1) FROM (SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day`  where date = '{tt}' GROUP  BY `user` ) AS TTT"
                 print(sql1)
+
+                df2 = pd.read_sql(sql2, engine)
+                total = int(df2.iloc[0][0])
+                page = int(total / num) + 1
+
                 df = pd.read_sql(sql1, engine)
                 df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
                 df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
@@ -809,6 +836,8 @@ class Index2View(APIView):
 
                 ret['code'] = 200
                 ret['data'] = cc
+                ret['total'] = total
+                ret['page'] = page
                 ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
                 return HttpResponse(ret)
 
@@ -820,7 +849,13 @@ class Index2View(APIView):
                 today = str(datetime.now())
                 day_7 = str(now - timedelta(days=7))[0:10]
                 sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{day_7}' and '{today}' GROUP  BY `user`  LIMIT {p_start}, {num};"
+                sql2 = f"SELECT COUNT(1) FROM (SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{day_7}' and '{today}' GROUP  BY `user` ) AS TTT"
                 print(sql1)
+
+
+                df2 = pd.read_sql(sql2, engine)
+                total = int(df2.iloc[0][0])
+                page = int(total / num) + 1
                 df = pd.read_sql(sql1, engine)
                 df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
                 df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
@@ -829,6 +864,8 @@ class Index2View(APIView):
                 # return render(request, 'class2.html', {'class_list': cc})
                 ret['code'] = 200
                 ret['data'] = cc
+                ret['total'] = total
+                ret['page'] = page
                 ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
                 return HttpResponse(ret)
 
@@ -837,7 +874,11 @@ class Index2View(APIView):
             if day_type=="year":
                 tt = str(datetime.today()-timedelta(days=1))[0:4]
                 sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date like '{tt}%%' GROUP  BY `user`  LIMIT {p_start}, {num};"
+                sql2 = f"SELECT COUNT(1) FROM (SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date like '{tt}%%' GROUP  BY `user` ) AS TTT"
                 print(sql1)
+                df2 = pd.read_sql(sql2, engine)
+                total = int(df2.iloc[0][0])
+                page = int(total / num) + 1
                 df = pd.read_sql(sql1, engine)
                 df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
                 df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
@@ -846,6 +887,8 @@ class Index2View(APIView):
                 # return render(request, 'class2.html', {'class_list': cc})
                 ret['code'] = 200
                 ret['data'] = cc
+                ret['total'] = total
+                ret['page'] = page
                 ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
                 return HttpResponse(ret)
 
@@ -856,7 +899,13 @@ class Index2View(APIView):
                 end = day_type[1]
 
                 sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{strat}' and '{end}' GROUP  BY `user`  LIMIT {p_start}, {num};"
+                sql2 = f"SELECT COUNT(1) FROM (SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{strat}' and '{end}' GROUP  BY `user` ) AS TTT"
                 print(sql1)
+
+
+                df2 = pd.read_sql(sql2, engine)
+                total = int(df2.iloc[0][0])
+                page = int(total / num) + 1
                 df = pd.read_sql(sql1, engine)
                 df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
                 df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
@@ -865,6 +914,8 @@ class Index2View(APIView):
                 # return render(request, 'class2.html', {'class_list': cc})
                 ret['code'] = 200
                 ret['data'] = cc
+                ret['total'] = total
+                ret['page'] = page
                 ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
                 return HttpResponse(ret)
         except BaseException as e:
