@@ -171,7 +171,7 @@ def GB_MB(num):
 
         if g_num < 1024:
             return str(g_num) + 'GB'
-        return str(int(g_num / 1024)) + 'TB'
+        return str(round(num / 1024 /1024, 2)) + 'TB'
 
 
 
@@ -614,136 +614,6 @@ class Class2View(APIView):
 
 
 
-class IndexView(APIView):
-
-    # authentication_classes = [Authtication, ]#身份验证
-
-    def get(self, request, *args, **kwargs):
-        ret = {'code': 0, 'data': None, "detail": "", "message": None, 'page': None, 'total': None}
-        pindex = int(kwargs.get('page'))
-        print(pindex)
-        day_type = kwargs.get('type')
-        print(day_type, '~~~~~~~~~~')
-        # num = 13
-        num = int(kwargs.get('num')[3:])
-
-        if num:
-            print(num, '~~~~~~~~~~')
-
-        else:
-            num = 50
-        if pindex == 1:
-            p_start = 0
-        else:
-            p_start = (pindex - 1) * num
-
-        try:
-            if day_type == "isday":
-                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` GROUP  BY `user`  LIMIT {p_start}, {num};"
-                df = pd.read_sql(sql1, engine)
-                df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
-                df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
-                df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
-                cc = df.values.tolist()
-                ret['code'] = 200
-                ret['data'] = cc
-                ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
-                return HttpResponse(ret)
-
-
-            if day_type=="isyesterday":
-                tt = str(datetime.today()-timedelta(days=1))[0:10]
-                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date = '{tt}' GROUP  BY `user`  LIMIT {p_start}, {num};"
-                print(sql1)
-                df = pd.read_sql(sql1, engine)
-                df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
-                df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
-                df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
-                cc = df.values.tolist()
-                # return render(request, 'class2.html', {'class_list': cc})
-                ret['code'] = 200
-                ret['data'] = cc
-                ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
-                return HttpResponse(ret)
-
-            if day_type=="istoday":
-                tt = str(datetime.today()-timedelta(days=0))[0:10]
-                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day`  where date = '{tt}' GROUP  BY `user`  LIMIT {p_start}, {num};"
-                print(sql1)
-                df = pd.read_sql(sql1, engine)
-                df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
-                df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
-                df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
-                cc = df.values.tolist()
-                # return render(request, 'class2.html', {'class_list': cc})
-
-                ret['code'] = 200
-                ret['data'] = cc
-                ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
-                return HttpResponse(ret)
-
-
-            if day_type=="isweek":
-                now = datetime.now()
-                this_week_start = str(now - timedelta(days=now.weekday()))[0:10]
-                this_week_end = str(now + timedelta(days=6 - now.weekday()))[0:10]
-                today = str(datetime.now())
-                day_7 = str(now - timedelta(days=7))[0:10]
-                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{day_7}' and '{today}' GROUP  BY `user`  LIMIT {p_start}, {num};"
-                print(sql1)
-                df = pd.read_sql(sql1, engine)
-                df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
-                df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
-                df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
-                cc = df.values.tolist()
-                # return render(request, 'class2.html', {'class_list': cc})
-                ret['code'] = 200
-                ret['data'] = cc
-                ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
-                return HttpResponse(ret)
-
-
-
-            if day_type=="isyear":
-                tt = str(datetime.today()-timedelta(days=1))[0:4]
-                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date like '{tt}%%' GROUP  BY `user`  LIMIT {p_start}, {num};"
-                print(sql1)
-                df = pd.read_sql(sql1, engine)
-                df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
-                df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
-                df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
-                cc = df.values.tolist()
-                # return render(request, 'class2.html', {'class_list': cc})
-                ret['code'] = 200
-                ret['data'] = cc
-                ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
-                return HttpResponse(ret)
-
-
-            if day_type[0:5] =="iszdy":
-                #http://121.37.252.51:7070/api/class2/page1/iszdy2020-05-292020-06-07
-                strat = day_type[5:15]
-                end = day_type[15:25]
-
-                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{strat}' and '{end}' GROUP  BY `user`  LIMIT {p_start}, {num};"
-                print(sql1)
-                df = pd.read_sql(sql1, engine)
-                df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
-                df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
-                df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
-                cc = df.values.tolist()
-                # return render(request, 'class2.html', {'class_list': cc})
-                ret['code'] = 200
-                ret['data'] = cc
-                ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
-                return HttpResponse(ret)
-        except BaseException as e:
-            ret['code'] = 400
-            ret['message'] = str(e)
-            print(ret)
-        ret = json.dumps(ret, ensure_ascii=False)  # ensure_ascii不做编码处理
-        return HttpResponse(ret)
-
 
 class Index2View(APIView):
 
@@ -771,7 +641,7 @@ class Index2View(APIView):
 
         try:
             if day_type == "day":
-                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` GROUP  BY `user`  LIMIT {p_start}, {num};"
+                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` GROUP  BY `user` order by up_sum desc  LIMIT {p_start}, {num};"
 
                 sql2 = f"SELECT COUNT(1) FROM (SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` GROUP  BY `user` ) AS TTT"
 
@@ -796,7 +666,7 @@ class Index2View(APIView):
 
             if day_type=="yesterday":
                 tt = str(datetime.today()-timedelta(days=1))[0:10]
-                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date = '{tt}' GROUP  BY `user`  LIMIT {p_start}, {num};"
+                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date = '{tt}' GROUP  BY `user` order by up_sum desc  LIMIT {p_start}, {num};"
                 sql2 = f"SELECT COUNT(1) FROM (SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date = '{tt}' GROUP  BY `user` ) AS TTT"
 
 
@@ -819,7 +689,7 @@ class Index2View(APIView):
 
             if day_type=="today":
                 tt = str(datetime.today()-timedelta(days=0))[0:10]
-                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day`  where date = '{tt}' GROUP  BY `user`  LIMIT {p_start}, {num};"
+                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day`  where date = '{tt}' GROUP  BY `user` order by up_sum desc  LIMIT {p_start}, {num};"
                 sql2 = f"SELECT COUNT(1) FROM (SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day`  where date = '{tt}' GROUP  BY `user` ) AS TTT"
                 print(sql1)
 
@@ -848,7 +718,7 @@ class Index2View(APIView):
                 this_week_end = str(now + timedelta(days=6 - now.weekday()))[0:10]
                 today = str(datetime.now())
                 day_7 = str(now - timedelta(days=7))[0:10]
-                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{day_7}' and '{today}' GROUP  BY `user`  LIMIT {p_start}, {num};"
+                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{day_7}' and '{today}' GROUP  BY `user` order by up_sum desc  LIMIT {p_start}, {num};"
                 sql2 = f"SELECT COUNT(1) FROM (SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{day_7}' and '{today}' GROUP  BY `user` ) AS TTT"
                 print(sql1)
 
@@ -873,7 +743,7 @@ class Index2View(APIView):
 
             if day_type=="year":
                 tt = str(datetime.today()-timedelta(days=1))[0:4]
-                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date like '{tt}%%' GROUP  BY `user`  LIMIT {p_start}, {num};"
+                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date like '{tt}%%' GROUP  BY `user` order by up_sum desc  LIMIT {p_start}, {num};"
                 sql2 = f"SELECT COUNT(1) FROM (SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM  `tank_day` where date like '{tt}%%' GROUP  BY `user` ) AS TTT"
                 print(sql1)
                 df2 = pd.read_sql(sql2, engine)
@@ -898,7 +768,7 @@ class Index2View(APIView):
                 strat = day_type[0]
                 end = day_type[1]
 
-                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{strat}' and '{end}' GROUP  BY `user`  LIMIT {p_start}, {num};"
+                sql1 = f"SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{strat}' and '{end}' GROUP  BY `user` order by up_sum desc  LIMIT {p_start}, {num};"
                 sql2 = f"SELECT COUNT(1) FROM (SELECT sum(up_sum) as up_sum, sum(downlink) as downlink, SUM(uplink) as uplink, user FROM `tank_day` where date between '{strat}' and '{end}' GROUP  BY `user` ) AS TTT"
                 print(sql1)
 
