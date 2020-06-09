@@ -475,11 +475,11 @@ class Class2View(APIView):
                 # sql1 = f"SELECT date, uplink+downlink as up_sum,downlink, uplink, user FROM `tank_day` \
                 #         WHERE date  BETWEEN '{this_week_start}' AND '{this_week_end}' and user='{user}' ORDER BY date  LIMIT {p_start}, {num};"
                 sql1 = f"SELECT CONCAT(date(update_time),' ',HOUR(update_time),':00')  as date, sum(uplink+downlink) as up_sum, sum(downlink) as downlink, sum(uplink) as uplink, user \
-                        FROM tank WHERE  user='tank' and date(update_time) BETWEEN '{day_7}' and  '{today}' \
+                        FROM tank WHERE  user='{user}' and date(update_time) BETWEEN '{day_7}' and  '{today}' \
                         group by CONCAT(date(update_time),' ',HOUR(update_time),':00')  ORDER BY date LIMIT {p_start}, {num};"
 
                 sql2 = f"SELECT COUNT(1) FROM (SELECT CONCAT(date(update_time),' ',HOUR(update_time),':00')  as date, sum(uplink+downlink) as up_sum, sum(downlink) as downlink, sum(uplink) as uplink, user \
-                        FROM tank WHERE  user='tank' and date(update_time) BETWEEN '{day_7}' and  '{today}' \
+                        FROM tank WHERE  user='{user}' and date(update_time) BETWEEN '{day_7}' and  '{today}' \
                         group by CONCAT(date(update_time),' ',HOUR(update_time),':00')  ORDER BY date ) AS TTT"
 
 
@@ -488,13 +488,25 @@ class Class2View(APIView):
                 page = int(total / num) + 1
 
 
+                def to_big(tt):
+                    timeArray = time.strptime(tt, "%Y-%m-%d %H:%M:%S")
+                    return int(time.mktime(timeArray))
+
 
                 df = pd.read_sql(sql1, engine)
                 df['date'] = df['date'].apply(lambda x: str(x))
+
                 df['uplink'] = df['uplink'].apply(lambda x: GB_MB(x))
                 df['downlink'] = df['downlink'].apply(lambda x: GB_MB(x))
                 df['up_sum'] = df['up_sum'].apply(lambda x: GB_MB(x))
-                cc = df.values.tolist()
+
+                df['time'] = df['date'].apply(lambda x: to_big(x+':00'))
+
+                dft = df.reindex(df['time'].abs().sort_values(ascending=True).index)
+
+                dff = dft.iloc[:, :5]
+
+                cc = dff.values.tolist()
                 # return render(request, 'class.html', {'class_list': cc})
                 ret['code'] = 200
                 ret['data'] = cc
