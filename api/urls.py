@@ -15,7 +15,7 @@ urlpatterns = [
     # url(r'^(?P<version>\w+)/order/$',  OrderView.as_view()),
     # url(r'^(?P<version>\w+)/ip/$',  IpView.as_view()),
     # url(r'^(?P<version>\w+)/login/$',  LoginView.as_view()),
-    url(r'^login/$',  LoginView.as_view()),
+    # url(r'^login/$',  LoginView.as_view()),
     # url(r'^class/page(?P<page>\d+)/(?P<type>.*?)/(?P<user>.*?)/(?P<num>.*?)/$',  ClassView.as_view()),
     # url(r'^index/page(?P<page>\d+)/(?P<type>.*?)/(?P<num>.*?)/$',  IndexView.as_view()),
     url(r'^index/',  Index2View.as_view()),
