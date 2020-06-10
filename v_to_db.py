@@ -32,42 +32,42 @@ for i in all:
     if 'user' not in i:
         pass
     else:
-        user = re.search("user-(.+?)-traffic",i).group(1)
-        value = re.search("value: (.+?)\n",i).group(1)
-        if 'downlink' in i:
-            up.append([user, value])
-        else:
-            down.append([user, value])
+        try:
+            user = re.search("user-(.+?)-traffic",i).group(1)
+            value = re.search("value: (.+?)\n",i).group(1)
+            if 'downlink' in i:
+                up.append([user, value])
+            else:
+                down.append([user, value])
+        except BaseException as e:
+            print(e)
 
 
 
+if len(up)>0:
+    today = str(datetime.today().date())
+    df1 = pd.DataFrame(up)
+    df1.columns = ['user', 'uplink']
+    df2 = pd.DataFrame(down)
+    df2.columns = ['user', 'downlink']
 
-today = str(datetime.today().date())
+    df3 = pd.merge(df1, df2, how='inner')
+    df3['date'] = today
+    df3['uplink'] = df3['uplink'].apply(lambda x: int(x))
+    df3['downlink'] = df3['downlink'].apply(lambda x: int(x))
+    to_sql('tank', engine, df3, type="update")
 
-df1 = pd.DataFrame(up)
-df1.columns = ['user', 'uplink']
-df2 = pd.DataFrame(down)
-df2.columns = ['user', 'downlink']
+    import time
+    time.sleep(3)
 
-df3 = pd.merge(df1, df2, how='inner')
-df3['date'] = today
-df3['uplink'] = df3['uplink'].apply(lambda x: int(x))
-df3['downlink'] = df3['downlink'].apply(lambda x: int(x))
-to_sql('tank', engine, df3, type="update")
-#
-#
-#
-import time
-time.sleep(3)
-
-now = datetime.now()
-this_week_start = str(now - timedelta(days=now.weekday()))[:19]
+    now = datetime.now()
+    this_week_start = str(now - timedelta(days=now.weekday()))[:19]
 
 
-sql = f"SELECT date,SUM(downlink) AS downlink, SUM(uplink) as uplink ,user, SUM(downlink+uplink) as up_sum FROM `tank` where update_time > '{this_week_start}' GROUP BY date, `user`"
+    sql = f"SELECT date,SUM(downlink) AS downlink, SUM(uplink) as uplink ,user, SUM(downlink+uplink) as up_sum FROM `tank` where update_time > '{this_week_start}' GROUP BY date, `user`"
 
-df = pd.read_sql(sql, engine)
-to_sql('tank_day', engine, df, type="update")
+    df = pd.read_sql(sql, engine)
+    to_sql('tank_day', engine, df, type="update")
 
 
 os.system(f'echo > {path+ "/v.log"}')
