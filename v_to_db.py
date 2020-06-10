@@ -9,9 +9,9 @@ from datetime import datetime, date, timedelta
 os.chdir('/opt/py_tank/')
 path = os.getcwd()
 
-# os.system("""./stat api --server=193.200.134.9:54322 StatsService.QueryStats 'pattern: "" reset: false'""")
+os.system("""./stat api --server=193.200.134.9:54322 StatsService.QueryStats 'pattern: "" reset: false'""")
 
-# time.sleep(4)
+time.sleep(4)
 
 
 
